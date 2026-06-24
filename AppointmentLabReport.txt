@@ -1,0 +1,33 @@
+Appointment Lab Report:
+
+
+Nmap Scan Report:
+
+  80/tcp open  http    Apache httpd 2.4.x ((Ubuntu))
+
+
+Findings:
+
+  The web application presented a login page at the root directory.
+  
+  No default credentials were accepted.
+  
+  The login form appeared vulnerable to SQL Injection.
+
+
+Exploit:
+
+  Intercepted the login request and tested SQL injection payloads in the username field.
+
+  Username:
+    admin' OR '1'='1'#
+
+  Password:
+    anything
+
+  The payload modified the SQL query logic to always evaluate as TRUE and commented out the remaining query.
+
+  After submitting the payload, authentication was bypassed and access to the dashboard was granted.
+
+  Successfully exploited SQL Injection authentication bypass vulnerability and captured the flag.
+
